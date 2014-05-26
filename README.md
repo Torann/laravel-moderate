@@ -1,5 +1,7 @@
 # Moderate for Laravel 4 - Alpha
 
+[![Latest Stable Version](https://poser.pugx.org/torann/moderate/v/stable.png)](https://packagist.org/packages/torann/moderate) [![Total Downloads](https://poser.pugx.org/torann/moderate/downloads.png)](https://packagist.org/packages/torann/moderate)
+
 A simple moderation system for Laravel 4.
 
 ----------
