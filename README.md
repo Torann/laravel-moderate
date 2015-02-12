@@ -57,6 +57,13 @@ $ php artisan migrate --package=torann/moderate
 
 ## Change Log
 
+#### v0.1.1
+
+- Add Blacklist drivers
+- Namespace cleanup
+- Better caching
+- Timestamp management
+
 #### v0.1.0
 
 - First release

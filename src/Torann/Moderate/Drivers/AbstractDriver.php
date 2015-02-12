@@ -1,15 +1,6 @@
 <?php namespace Torann\Moderate\Drivers;
 
-use \Illuminate\Foundation\Application;
-
 abstract class AbstractDriver {
-
-    /**
-     * Application instance
-     *
-     * @var \Illuminate\Foundation\Application
-     */
-    protected $app;
 
     /**
      * Moderate config
@@ -19,23 +10,13 @@ abstract class AbstractDriver {
     protected $config;
 
     /**
-     * Table name
-     *
-     * @var string
-     */
-    protected $tableName;
-
-    /**
      * Constructor
      *
-     * @param Application $app
-     * @param array       $config
+     * @param array $config
      */
-    public function __construct(Application $app, array $config = array())
+    public function __construct(array $config = array())
     {
-        $this->app       = $app;
-        $this->config    = $config;
-        $this->tableName = array_get($config, 'blacklistTable', 'blacklists');
+        $this->config = $config;
     }
 
     /**
@@ -44,11 +25,4 @@ abstract class AbstractDriver {
      * @return array
      */
     abstract public function getList();
-
-    /**
-     * Clean blacklist from cache
-     *
-     * @return array
-     */
-    abstract public function flushCache();
 }

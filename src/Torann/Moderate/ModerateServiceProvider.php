@@ -32,22 +32,23 @@ class ModerateServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $this->registerDriver();
+        $this->registerCache();
         $this->registerModerate();
     }
 
     /**
-     * Register the blacklist driver.
+     * Register the collection repository.
      *
      * @return void
      */
-    protected function registerDriver()
+    protected function registerCache()
     {
-        $this->app['torann.moderate.driver'] = $this->app->share(function($app)
+        $this->app['torann.moderate.cache'] = $this->app->share(function($app)
         {
+            $meta = $app['config']->get('app.manifest');
             $config = $app->config->get('moderate::config', array());
 
-            return new $config['driver']($app, $config);
+            return new Cache($meta, $config);
         });
     }
 
@@ -60,14 +61,9 @@ class ModerateServiceProvider extends ServiceProvider {
     {
         $this->app->bind('torann.moderate', function ($app)
         {
-            // Read settings from config file
             $config = $app->config->get('moderate::config', array());
 
-            // Get Black list items
-            $blackList = $app['torann.moderate.driver']->getList();
-
-            // Create instance
-            return new Moderator($config, $blackList);
+            return new Moderator($config, $app['torann.moderate.cache']);
         });
 
         $app = $this->app;
@@ -75,7 +71,7 @@ class ModerateServiceProvider extends ServiceProvider {
         // Register update event with the application
         $this->app['events']->listen('blacklist.updated', function () use ($app)
         {
-            $app['torann.moderate.driver']->flushCache();
+            $app['torann.moderate']->reloadBlacklist();
         });
     }
 

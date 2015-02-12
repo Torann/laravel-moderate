@@ -10,6 +10,13 @@ class Moderator
     protected $config = array();
 
     /**
+     * \Torann\Moderate\Cache
+     *
+     * @var array
+     */
+    public $cache;
+
+    /**
      * Blacklist
      *
      * @var array
@@ -20,12 +27,41 @@ class Moderator
      * Class constructor.
      *
      * @param  array $config
-     * @param  array $blackList
+     * @param  \Torann\Moderate\Cache $cache
      */
-    function __construct(array $config, array $blackList)
+    function __construct(array $config, Cache $cache)
     {
-        $this->config    = $config;
-        $this->blackList = $blackList;
+        $this->config = $config;
+        $this->cache  = $cache;
+
+        // Load blacklist
+        $this->loadBlacklist();
+    }
+
+    /**
+     * Load blacklist data
+     */
+    public function loadBlacklist()
+    {
+        $config = $this->config;
+
+        // Get Black list items
+        $this->blackList = $this->cache->remember(function() use ($config)
+        {
+            $driver = new $config['driver']($config);
+
+            return $driver->getList();
+        });
+    }
+
+    /**
+     * Reload blacklist data
+     */
+    public function reloadBlacklist()
+    {
+        $this->cache->flush();
+
+        $this->loadBlacklist();
     }
 
     /**

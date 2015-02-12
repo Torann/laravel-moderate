@@ -14,6 +14,7 @@ class CreateBlacklistsTable extends Migration {
         Schema::create('blacklists', function($table)
         {
             $table->increments('id');
+            $table->string('title');
             $table->text('element');
             $table->timestamps();
         });

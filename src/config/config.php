@@ -48,6 +48,18 @@ return array(
 
     /*
      |--------------------------------------------------------------------------
+     | Blacklist caching
+     |--------------------------------------------------------------------------
+     |
+     | When using the "database" driver, you may specify to have the system
+     | cache the list. This helps speed up the the moderation process
+     |
+     */
+
+    'cacheBlacklist' => true,
+
+    /*
+     |--------------------------------------------------------------------------
      | Default maximum of links
      |--------------------------------------------------------------------------
      |
