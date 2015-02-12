@@ -52,6 +52,6 @@ trait HasModerate
      */
     public function isModerated()
     {
-        return $this->moderated == true;
+        return (int) $this->moderated === 1;
     }
 }
