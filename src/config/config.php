@@ -16,6 +16,17 @@ return array(
 
     /*
      |--------------------------------------------------------------------------
+     | Default maximum of links
+     |--------------------------------------------------------------------------
+     |
+     | The default maximum number of links allowed in a moderated item.
+     |
+     */
+
+    'defaultMaxLinks' => 10,
+
+    /*
+     |--------------------------------------------------------------------------
      | Default Driver
      |--------------------------------------------------------------------------
      |
@@ -23,10 +34,7 @@ return array(
      | blacklist. By default, we will use the lightweight native driver but
      | you may specify any of the other wonderful drivers provided here.
      |
-     | Note: Laravel Registry package is supported too ;-)
-     |
-     | Supported: "\\Torann\\Moderate\\Drivers\\Database",
-     |            "\\Torann\\Moderate\\Drivers\\LaravelRegistry"
+     | Supported: "\\Torann\\Moderate\\Drivers\\Database"
      |
      */
 
@@ -51,22 +59,23 @@ return array(
      | Blacklist caching
      |--------------------------------------------------------------------------
      |
-     | When using the "database" driver, you may specify to have the system
-     | cache the list. This helps speed up the the moderation process
+     | Helps speed up the the moderation process by caching the list.
      |
      */
 
     'cacheBlacklist' => true,
 
-    /*
+     /*
      |--------------------------------------------------------------------------
-     | Default maximum of links
+     | Cache timestamp
      |--------------------------------------------------------------------------
      |
-     | The default maximum number of links allowed in a moderated item.
+     | Used for multi-instance web servers. This can be used to ensure
+     | the registry for all instances are kept up to date.
+     |
+     | For Redis: \\Torann\\Moderate\\Timestamps\\Redis
      |
      */
 
-    'defaultMaxLinks' => 10,
-
+    'timestamp_manager' => '',
 );
