@@ -1,43 +1,32 @@
 <?php namespace Torann\Moderate;
 
-use Moderate;
 use Event;
+use Moderate;
 
-trait HasModerations
+trait HasModerate
 {
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    public static function boot()
-    {
-        parent::boot();
-
-        static::bootModerations();
-    }
-
     /**
      * Register eloquent event handlers.
      *
      * @return void
      */
-    public static function bootModerations()
+    public static function bootModerate()
     {
-        static::creating(function ($model) {
-
+        static::creating(function ($model)
+        {
             $failure = 0;
 
-            foreach($model->moderations as $id => $moderation) {
-
+            foreach($model->moderate as $id => $moderation)
+            {
                 $rules = explode('|', $moderation);
 
-                foreach($rules as $rule) {
-
+                foreach($rules as $rule)
+                {
                     $action = explode(':', $rule);
                     $options = isset($action[1]) ? $action[1] : null;
 
-                    if(Moderate::$action[0]($model->$id, $options)) {
+                    if(Moderate::$action[0]($model->$id, $options))
+                    {
                         $failure++;
                     }
                 }
@@ -47,15 +36,17 @@ trait HasModerations
         });
 
         // Was it moderated
-        static::created(function ($model) {
-            if ($model->moderated) {
-                Event::fire('moderations.moderated', $model);
+        static::created(function ($model)
+        {
+            if ($model->moderated)
+            {
+                Event::fire('moderation.moderated', $model);
             }
         });
     }
 
     /**
-     * Check is the item is moderated.
+     * Check if the resource is moderated.
      *
      * @return bool
      */

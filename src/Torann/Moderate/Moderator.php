@@ -1,7 +1,5 @@
 <?php namespace Torann\Moderate;
 
-use \Illuminate\Database\DatabaseManager;
-
 class Moderator
 {
     /**
@@ -22,21 +20,12 @@ class Moderator
      * Class constructor.
      *
      * @param  array $config
-     * @param  array $db
-     * @return void
+     * @param  array $blackList
      */
-    function __construct(array $config, $blackList)
+    function __construct(array $config, array $blackList)
     {
-        $this->config = $config;
+        $this->config    = $config;
         $this->blackList = $blackList;
-    }
-
-    /**
-     * @param TextProcessor $textProcessor
-     */
-    public function setTextProcessor(TextProcessor $textProcessor)
-    {
-        $this->textProcessor = $textProcessor;
     }
 
     /**
@@ -48,7 +37,6 @@ class Moderator
      */
     public function blacklist($text)
     {
-
         // No blacklist then there isn't much to do
         if (empty($this->blackList)) {
             return false;
@@ -59,14 +47,18 @@ class Moderator
         // Remove special characters
         $text = preg_replace("/[^a-zA-Z0-9-\.]/", "", $text);
 
-        $blackListRegex = sprintf('!%s!', implode('|', array_map(function ($value) {
-            if (isset($value[0]) && $value[0] == '[') {
+        $blackListRegex = sprintf('!%s!', implode('|', array_map(function ($value)
+        {
+            if (isset($value[0]) && $value[0] == '[')
+            {
                 $value = substr($value, 1, -1);
-            } else {
+            }
+            else {
                 $value = preg_quote($value);
             }
 
             return '(?:' . $value . ')';
+
         }, $this->blackList)));
 
         return (bool)preg_match($blackListRegex, $text);
@@ -103,8 +95,10 @@ class Moderator
      */
     public function prepare($text)
     {
-        if (isset($this->config["asciiConversion"])) {
+        if (isset($this->config["asciiConversion"]))
+        {
             setlocale(LC_ALL, 'en_us.UTF8');
+
             $text = iconv('UTF-8', 'ASCII//TRANSLIT', $text);
         }
 

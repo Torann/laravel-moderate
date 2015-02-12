@@ -1,7 +1,7 @@
 {
     "name": "torann/moderate",
-    "description": "A simple moderation system for Laravel 4.",
-    "keywords": ["laravel", "moderate", "moderation", "spam", "blacklist", "restrict"],
+    "description": "A simple moderation system for Laravel.",
+    "keywords": ["laravel", "moderate", "moderation", "spam", "blacklist", "restrict", "security", "protect"],
     "license": "BSD 2-Clause",
     "authors": [
         {
@@ -11,9 +11,9 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "~4.1",
-        "illuminate/database": "~4.1",
-        "illuminate/cache": "~4.1"
+        "illuminate/support": "~4.2|~5.0",
+        "illuminate/database": "~4.2|~5.0",
+        "illuminate/cache": "~4.2|~5.0"
     },
     "autoload": {
         "classmap": [
