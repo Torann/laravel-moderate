@@ -77,6 +77,7 @@ class Moderator
         if (empty($this->blackList)) {
             return false;
         }
+
         // Normalize string before passing
         $text = $this->prepare($text);
 
@@ -85,6 +86,12 @@ class Moderator
 
         $blackListRegex = sprintf('!%s!', implode('|', array_map(function ($value)
         {
+            // Compile newlines
+            if (preg_match("/\r\n|\r|\n/", $value))
+            {
+                $value = "[".preg_replace("/\r\n|\r|\n/", "|", $value)."]";
+            }
+
             if (isset($value[0]) && $value[0] == '[')
             {
                 $value = substr($value, 1, -1);
