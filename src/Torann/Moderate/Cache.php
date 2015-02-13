@@ -116,8 +116,8 @@ class Cache {
      */
     public function expired()
     {
-        // Update if empty
-        if (empty($this->entries))
+        // Update if empty or just a timestamp
+        if (empty($this->entries) || count($this->entries) <= 1)
         {
             return true;
         }
