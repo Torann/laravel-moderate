@@ -38,7 +38,7 @@ trait HasModerate
         // Was it moderated
         static::created(function ($model)
         {
-            if ($model->moderated)
+            if ($model->isModerated())
             {
                 Event::fire('moderation.moderated', $model);
             }
