@@ -12,15 +12,17 @@
     "require": {
         "php": ">=5.5.9",
         "illuminate/support": "5.1.*|5.2.*",
-        "illuminate/database": "5.1.*|5.2.*",
         "illuminate/cache": "5.1.*|5.2.*"
+    },
+    "suggest": {
+        "illuminate/database": "Allows for storing blacklist in the database"
     },
     "autoload": {
         "classmap": [
             "src/migrations"
         ],
         "psr-4": {
-            "Torann\\Moderate": "src/"
+            "Torann\\Moderate\\": "src/Torann/Moderate"
         }
     },
     "extra": {
@@ -28,5 +30,9 @@
             "dev-master": "0.2-dev"
         }
     },
-    "minimum-stability": "dev"
+    "archive" : {
+        "exclude": [
+            "/tests"
+        ]
+    }
 }
