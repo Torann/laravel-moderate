@@ -42,6 +42,18 @@ return [
 
     /*
      |--------------------------------------------------------------------------
+     | Support Multiple Locales
+     |--------------------------------------------------------------------------
+     |
+     | This option allows for multiple locale support in drivers, that is if
+     | the driver supports it.
+     |
+     */
+
+    'support_locales' => false,
+
+    /*
+     |--------------------------------------------------------------------------
      | Driver Specific Configuration
      |--------------------------------------------------------------------------
      |
@@ -55,12 +67,10 @@ return [
         'local' => [
             'path'           => base_path('blacklist.json'),
             'ignore_missing' => true,
-            'locales'        => false,
         ],
 
         'database' => [
             'table'   => 'blacklists',
-            'locales' => false,
         ],
 
     ],

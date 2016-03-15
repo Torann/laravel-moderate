@@ -13,14 +13,13 @@ class Local extends AbstractDriver
     {
         $path = $this->getConfig('path');
 
-        // Multiple locale support, appends locale
-        // key to blacklist filename.
-        if ($this->getConfig('locales', false)) {
+        // Multiple locale support by appending the
+        // current locale key to blacklist filename.
+        if ($this->getLocal() !== null) {
             $path = preg_replace('/(\.[^.]+)$/', sprintf('_%s$1', $this->getLocal()), $path);
         }
 
         if (file_exists($path) === false) {
-
             // Ignore missing blacklist files
             if ($this->getConfig('ignore_missing', true)) {
                 return [];

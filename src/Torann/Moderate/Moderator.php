@@ -53,7 +53,9 @@ class Moderator
     {
         $this->config = $config;
         $this->cache = $cache;
-        $this->locale = $locale;
+
+        // Set locale if supported
+        $this->locale = $this->getConfig('support_locales', false) ? $locale : null;
 
         // Load blacklist
         $this->loadBlacklist();
@@ -115,13 +117,14 @@ class Moderator
     }
 
     /**
-     * Get cache key with locale appended
+     * Get cache key with locale appended if applicable.
      *
      * @return string
      */
     public function getCacheKey()
     {
-        return $this->getConfig('cache.key', 'moderate.blacklist') . ".{$this->locale}";
+        return $this->getConfig('cache.key', 'moderate.blacklist')
+            . ($this->locale ? ".{$this->locale}" : '');
     }
 
     /**
@@ -192,7 +195,9 @@ class Moderator
     protected function createRegex()
     {
         // Load list from driver
-        $list = $this->getDriver()->getList();
+        if (empty($list = $this->getDriver()->getList())) {
+            return null;
+        }
 
         return sprintf('/\b(%s)\b/i', implode('|', array_map(function ($value) {
             if (isset($value[0]) && $value[0] == '[') {
@@ -224,6 +229,6 @@ class Moderator
         // Driver name
         $name = basename(strtolower(str_replace('\\', '/', $driver)));
 
-        return $this->driver = new $driver($this->locale, $this->getConfig("drivers.{$name}", []));
+        return $this->driver = new $driver($this->getConfig("drivers.{$name}", []), $this->locale);
     }
 }

@@ -11,7 +11,7 @@ abstract class AbstractDriver
      *
      * @var string
      */
-    protected $locale;
+    protected $locale = null;
 
     /**
      * Moderate config
@@ -23,13 +23,13 @@ abstract class AbstractDriver
     /**
      * Create a new driver instance.
      *
+     * @param array  $config
      * @param string $locale
-     * @param array $config
      */
-    public function __construct($locale, array $config = [])
+    public function __construct(array $config = [], $locale)
     {
-        $this->locale = $locale;
         $this->config = $config;
+        $this->locale = $locale;
     }
 
     /**

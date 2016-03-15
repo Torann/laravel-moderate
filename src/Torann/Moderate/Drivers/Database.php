@@ -15,7 +15,7 @@ class Database extends AbstractDriver
         $query = DB::table($this->getConfig('table', 'blacklists'));
 
         // Multiple locale support
-        if ($this->getConfig('locales', false)) {
+        if ($this->getLocal() !== null) {
             $query->where('locale', $this->getLocal());
         }
 

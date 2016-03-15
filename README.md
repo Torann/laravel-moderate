@@ -17,6 +17,10 @@ For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-m
 
 ## Change Log
 
+#### v0.2.1
+
+- Better multiple locale support
+
 #### v0.2.0
 
 - Update to support Laravel 5
