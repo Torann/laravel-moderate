@@ -1,4 +1,6 @@
-<?php namespace Torann\Moderate\Facades;
+<?php
+
+namespace Torann\Moderate\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

@@ -1,4 +1,9 @@
-<?php namespace Torann\Moderate;
+<?php
+
+namespace Torann\Moderate;
+
+use Illuminate\Support\Arr;
+use Illuminate\Contracts\Cache\Factory as CacheContract;
 
 class Moderator
 {
@@ -7,51 +12,51 @@ class Moderator
      *
      * @var array
      */
-    protected $config = array();
+    protected $config = [];
+
+    /**
+     * System local.
+     *
+     * @var string
+     */
+    protected $locale = null;
 
     /**
      * \Torann\Moderate\Cache
      *
      * @var array
      */
-    public $cache;
+    protected $cache;
 
     /**
-     * Blacklist
+     * Blacklist driver
      *
-     * @var array
+     * @var Drivers\AbstractDriver
      */
-    public $blackList;
+    protected $driver;
 
     /**
-     * Class constructor.
+     * Blacklist Regex
      *
-     * @param  array $config
-     * @param  \Torann\Moderate\Cache $cache
+     * @var string
      */
-    function __construct(array $config, Cache $cache)
+    protected $blackListRegex = null;
+
+    /**
+     * Create a new moderator instance.
+     *
+     * @param  array         $config
+     * @param  CacheContract $cache
+     * @param  string        $locale
+     */
+    function __construct(array $config, CacheContract $cache, $locale)
     {
         $this->config = $config;
-        $this->cache  = $cache;
+        $this->cache = $cache;
+        $this->locale = $locale;
 
         // Load blacklist
         $this->loadBlacklist();
-    }
-
-    /**
-     * Load blacklist data
-     */
-    public function loadBlacklist()
-    {
-        $config = $this->config;
-
-        // Get Black list items
-        $this->blackList = $this->cache->remember(function() use ($config)
-        {
-            $driver = new $config['driver']($config);
-
-            return $driver->getList();
-        });
     }
 
     /**
@@ -59,7 +64,9 @@ class Moderator
      */
     public function reloadBlacklist()
     {
-        $this->cache->flush();
+        $this->cache->flush($this->getCacheKey());
+
+        $this->blackListRegex = null;
 
         $this->loadBlacklist();
     }
@@ -73,59 +80,61 @@ class Moderator
      */
     public function blacklist($text)
     {
-        // No blacklist then there isn't much to do
-        if (empty($this->blackList)) {
+        // No blacklist regex then there isn't much to do
+        if ($this->blackListRegex === null) {
             return false;
         }
 
         // Normalize string before passing
         $text = $this->prepare($text);
 
-        // Remove special characters
-        $text = preg_replace("/[^a-zA-Z0-9-\.]/", "", $text);
-
-        $blackListRegex = sprintf('!%s!', implode('|', array_map(function ($value)
-        {
-            // Compile newlines
-            if (preg_match("/\r\n|\r|\n/", $value))
-            {
-                $value = "[".preg_replace("/\r\n|\r|\n/", "|", $value)."]";
-            }
-
-            if (isset($value[0]) && $value[0] == '[')
-            {
-                $value = substr($value, 1, -1);
-            }
-            else {
-                $value = preg_quote($value);
-            }
-
-            return '(?:' . $value . ')';
-
-        }, $this->blackList)));
-
-        return (bool)preg_match($blackListRegex, $text);
+        // Look for matches
+        return preg_match($this->blackListRegex, $text) > 0;
     }
 
     /**
      * Checks the text if it contains any word that is blacklisted.
      *
      * @param string $text
-     * @param string $maxLinkAllowed
+     * @param string $limit
      *
      * @return bool
      */
-    public function links($text, $maxLinkAllowed)
+    public function links($text, $limit = null)
     {
-        $maxLinkAllowed = $maxLinkAllowed ?: $this->config["defaultMaxLinks"];
+        // Set link limit
+        $limit = is_null($limit) ? $this->getConfig('defaultMaxLinks', 10) : $limit;
 
         // Normalize string before passing
         $text = $this->prepare($text);
 
+        // Get link matches
         preg_match_all("!((https?://)?([-\w]+\.[-\w\.]+)+\w(:\d+)?(/([-\w/_\.]*(\?\S+)?)?)*)!", $text, $matches);
-        $linkCount = count($matches[0]);
 
-        return ($linkCount >= (int) $maxLinkAllowed);
+        return (count($matches[0]) >= (int) $limit);
+    }
+
+    /**
+     * Get cache key with locale appended
+     *
+     * @return string
+     */
+    public function getCacheKey()
+    {
+        return $this->getConfig('cache.key', 'moderate.blacklist') . ".{$this->locale}";
+    }
+
+    /**
+     * Get configuration value.
+     *
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getConfig($key, $default = null)
+    {
+        return Arr::get($this->config, $key, $default);
     }
 
     /**
@@ -136,24 +145,85 @@ class Moderator
      *
      * @return string
      */
-    public function prepare($text)
+    protected function prepare($text)
     {
-        if (isset($this->config["asciiConversion"]))
-        {
+        if ($this->getConfig('asciiConversion', true)) {
             setlocale(LC_ALL, 'en_us.UTF8');
 
             $text = iconv('UTF-8', 'ASCII//TRANSLIT', $text);
         }
 
         $text = trim(strtolower($text));
-        $text = str_replace(array("\t", "\r\n", "\r", "\n"), "", $text);
+        $text = str_replace(["\t", "\r\n", "\r", "\n"], "", $text);
 
         // Convert some characters that 'MAY' be used as alias
-        $text = str_replace(array("@", "$", "[dot]", "(dot)"), array("at", "s", ".", "."), $text);
+        $text = str_replace(["@", "$", "[dot]", "(dot)"], ["at", "s", ".", "."], $text);
 
         // Strip multiple dots (.) to one. eg site......com to site.com
         $text = preg_replace("/\.{2,}/", ".", $text);
 
-        return $text;
+        // Remove special characters
+        return preg_replace("/[^a-zA-Z0-9-\.\s]/", "", $text);
+    }
+
+    /**
+     * Load blacklist data
+     *
+     * @return string
+     */
+    protected function loadBlacklist()
+    {
+        // Check if caching is enabled
+        if ($this->getConfig('cache.enabled', false) === false) {
+            return $this->blackListRegex = $this->createRegex();
+        }
+
+        // Get Black list items
+        return $this->blackListRegex = $this->cache->rememberForever($this->getCacheKey(), function () {
+            return $this->createRegex();
+        });
+    }
+
+    /**
+     * Create blacklist regex from driver data.
+     *
+     * @return string
+     */
+    protected function createRegex()
+    {
+        // Load list from driver
+        $list = $this->getDriver()->getList();
+
+        return sprintf('/\b(%s)\b/i', implode('|', array_map(function ($value) {
+            if (isset($value[0]) && $value[0] == '[') {
+                return $value;
+            }
+            else if (preg_match("/\r\n|\r|\n/", $value)) {
+                return preg_replace("/\r\n|\r|\n/", "|", $value);
+            }
+
+            return preg_quote($value);
+
+        }, $list)));
+    }
+
+    /**
+     * Get moderation driver.
+     *
+     * @return Drivers\AbstractDriver
+     */
+    protected function getDriver()
+    {
+        if ($this->driver) {
+            return $this->driver;
+        }
+
+        // Get driver
+        $driver = $this->getConfig('driver');
+
+        // Driver name
+        $name = basename(strtolower(str_replace('\\', '/', $driver)));
+
+        return $this->driver = new $driver($this->locale, $this->getConfig("drivers.{$name}", []));
     }
 }

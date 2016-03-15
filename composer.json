@@ -10,22 +10,22 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
-        "illuminate/support": "~4.2",
-        "illuminate/database": "~4.2",
-        "illuminate/cache": "~4.2"
+        "php": ">=5.5.9",
+        "illuminate/support": "5.1.*|5.2.*",
+        "illuminate/database": "5.1.*|5.2.*",
+        "illuminate/cache": "5.1.*|5.2.*"
     },
     "autoload": {
         "classmap": [
             "src/migrations"
         ],
-        "psr-0": {
+        "psr-4": {
             "Torann\\Moderate": "src/"
         }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.1-dev"
+            "dev-master": "0.2-dev"
         }
     },
     "minimum-stability": "dev"

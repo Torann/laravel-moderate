@@ -1,61 +1,29 @@
-# Moderate for Laravel 4 - Alpha
+# Moderate for Laravel 5
 
 [![Latest Stable Version](https://poser.pugx.org/torann/moderate/v/stable.png)](https://packagist.org/packages/torann/moderate) [![Total Downloads](https://poser.pugx.org/torann/moderate/downloads.png)](https://packagist.org/packages/torann/moderate)
 
-A simple moderation system for Laravel 4.
-
-----------
-
-## Installation
+A simple moderation system for Laravel 5.
 
 - [Moderate on Packagist](https://packagist.org/packages/torann/moderate)
 - [Moderate on GitHub](https://github.com/torann/laravel-moderate)
 
-To get the latest version of Moderate simply require it in your `composer.json` file.
+## Official Documentation
 
-~~~
-"torann/moderate": "dev-master"
-~~~
+Documentation for the framework can be found on [Lyften.com](http://lyften.com/projects/laravel-moderate/).
 
-You'll then need to run `composer install` to download it and have the autoloader updated.
+## Laravel 4
 
-Once Moderate is installed you need to register the service provider with the application. Open up `app/config/app.php` and find the `providers` key.
-
-~~~php
-'providers' => array(
-
-    'Torann\Moderate\ModerateServiceProvider',
-
-)
-~~~
-
-### Publish the config
-
-Run this on the command line from the root of your project:
-
-~~~
-$ php artisan config:publish torann/moderate
-~~~
-
-This will publish Moderate's config to ``app/config/packages/torann/moderate/``.
-
-### Migration
-
-Now migrate the database tables for Moderate. Run this on the command line from the root of your project:
-
-~~~
-$ php artisan migrate --package=torann/moderate
-~~~
-
-## Documentation
-
-[View the official documentation](http://lyften.com/projects/laravel-moderate/).
-
-## ToDos
-
-- Add a whitelist for users. Not everyone's evil :-)
+For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-moderate/tree/0.1);
 
 ## Change Log
+
+#### v0.2.0
+
+- Update to support Laravel 5
+- More flexible blacklist drivers
+- Add local blacklist driver
+- Multiple locale support for blacklists
+- Replaced homegrown caching with Laravel's
 
 #### v0.1.1
 
@@ -67,3 +35,7 @@ $ php artisan migrate --package=torann/moderate
 #### v0.1.0
 
 - First release
+
+### License
+
+Moderate is open-sourced software licensed under the BSD 2-Clause License.

@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 
     /*
      |--------------------------------------------------------------------------
@@ -34,25 +34,36 @@ return array(
      | blacklist. By default, we will use the lightweight native driver but
      | you may specify any of the other wonderful drivers provided here.
      |
-     | Supported: "\\Torann\\Moderate\\Drivers\\Database"
+     | Supported: \Torann\Moderate\Drivers\Local::class
      |
      */
 
-    'driver' => '\\Torann\\Moderate\\Drivers\\Database',
+    'driver' => \Torann\Moderate\Drivers\Local::class,
 
     /*
      |--------------------------------------------------------------------------
-     | Table name for blacklisted items
+     | Driver Specific Configuration
      |--------------------------------------------------------------------------
      |
-     | When using the "database" and "registry" driver, you may specify the
-     | table we should use to manage the blacklisted items. Of course, a
-     | sensible default is provided for you; however, you are free to
-     | change this as needed.
+     | Here you may configure as many drivers as you wish. The base class name
+     | of the driver is used as the driver key.
      |
      */
 
-    'blacklistTable' => 'blacklists',
+    'drivers' => [
+
+        'local' => [
+            'path'           => base_path('blacklist.json'),
+            'ignore_missing' => true,
+            'locales'        => false,
+        ],
+
+        'database' => [
+            'table'   => 'blacklists',
+            'locales' => false,
+        ],
+
+    ],
 
     /*
      |--------------------------------------------------------------------------
@@ -63,19 +74,10 @@ return array(
      |
      */
 
-    'cacheBlacklist' => true,
+    'cache' => [
 
-     /*
-     |--------------------------------------------------------------------------
-     | Cache timestamp
-     |--------------------------------------------------------------------------
-     |
-     | Used for multi-instance web servers. This can be used to ensure
-     | the registry for all instances are kept up to date.
-     |
-     | For Redis: \\Torann\\Moderate\\Timestamps\\Redis
-     |
-     */
+        'enabled' => true,
 
-    'timestamp_manager' => '',
-);
+        'key' => 'moderate.blacklist',
+    ],
+];

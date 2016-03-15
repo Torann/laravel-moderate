@@ -1,6 +1,6 @@
-<?php namespace Torann\Moderate;
+<?php
 
-use Event;
+namespace Torann\Moderate;
 
 trait BlacklistTrait
 {
@@ -9,16 +9,14 @@ trait BlacklistTrait
      *
      * @return void
      */
-    public static function bootBlacklist()
+    public static function bootBlacklistTrait()
     {
-        static::saved(function ($model)
-        {
-            Event::fire('blacklist.updated');
+        static::saved(function ($model) {
+            event('blacklist.updated');
         });
 
-        static::deleted(function ($model)
-        {
-            Event::fire('blacklist.updated');
+        static::deleted(function ($model) {
+            event('blacklist.updated');
         });
     }
 }

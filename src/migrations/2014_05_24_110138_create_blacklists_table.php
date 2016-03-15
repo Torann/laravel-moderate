@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBlacklistsTable extends Migration {
-
+class CreateBlacklistsTable extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -11,11 +11,11 @@ class CreateBlacklistsTable extends Migration {
      */
     public function up()
     {
-        Schema::create('blacklists', function($table)
-        {
+        Schema::create('blacklists', function ($table) {
             $table->increments('id');
             $table->string('title');
             $table->text('element');
+            $table->string('locale', 12)->default('');
             $table->timestamps();
         });
     }
@@ -29,5 +29,4 @@ class CreateBlacklistsTable extends Migration {
     {
         Schema::drop('blacklists');
     }
-
 }

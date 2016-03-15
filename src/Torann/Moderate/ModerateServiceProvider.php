@@ -1,17 +1,11 @@
-<?php namespace Torann\Moderate;
+<?php
+
+namespace Torann\Moderate;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Foundation\AliasLoader;
 
-class ModerateServiceProvider extends ServiceProvider {
-
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
+class ModerateServiceProvider extends ServiceProvider
+{
     /**
      * Bootstrap the application events.
      *
@@ -19,10 +13,15 @@ class ModerateServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-        $this->package('torann/moderate');
+        if ($this->isLumen() === false) {
+            $this->publishes([
+                __DIR__ . '/../../config/moderate.php' => config_path('moderate.php'),
+            ]);
 
-        // Add 'Moderate' facade alias
-        AliasLoader::getInstance()->alias('Moderate', 'Torann\Moderate\Facades\Moderate');
+            $this->mergeConfigFrom(
+                __DIR__ . '/../../config/moderate.php', 'moderate'
+            );
+        }
     }
 
     /**
@@ -32,47 +31,26 @@ class ModerateServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $this->registerCache();
-        $this->registerModerate();
-    }
+        $this->app->bind(Moderator::class, function ($app) {
+            $config = $app->config->get('moderate', []);
 
-    /**
-     * Register the collection repository.
-     *
-     * @return void
-     */
-    protected function registerCache()
-    {
-        $this->app['torann.moderate.cache'] = $this->app->share(function($app)
-        {
-            $meta = $app['config']->get('app.manifest');
-            $config = $app->config->get('moderate::config', array());
-
-            return new Cache($meta, $config);
+            return new Moderator($config, $app['cache'], $app->getLocale());
         });
-    }
-
-    /**
-     * Register the collection repository.
-     *
-     * @return void
-     */
-    protected function registerModerate()
-    {
-        $this->app->bind('torann.moderate', function ($app)
-        {
-            $config = $app->config->get('moderate::config', array());
-
-            return new Moderator($config, $app['torann.moderate.cache']);
-        });
-
-        $app = $this->app;
 
         // Register update event with the application
-        $this->app['events']->listen('blacklist.updated', function () use ($app)
-        {
-            $app['torann.moderate']->reloadBlacklist();
+        $this->app['events']->listen('blacklist.updated', function () {
+            $this->app[Moderator::class]->reloadBlacklist();
         });
+    }
+
+    /**
+     * Check if package is running under Lumen app
+     *
+     * @return bool
+     */
+    protected function isLumen()
+    {
+        return str_contains($this->app->version(), 'Lumen') === true;
     }
 
     /**
@@ -82,7 +60,6 @@ class ModerateServiceProvider extends ServiceProvider {
      */
     public function provides()
     {
-        return array();
+        return [];
     }
-
 }
