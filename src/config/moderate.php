@@ -76,7 +76,7 @@ return [
 
     'cache' => [
 
-        'enabled' => true,
+        'enabled' => false,
 
         'key' => 'moderate.blacklist',
     ],
