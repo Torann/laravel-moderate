@@ -223,12 +223,13 @@ class Moderator
             return $this->driver;
         }
 
-        // Get driver
-        $driver = $this->getConfig('driver');
+        // Get driver configuration
+        $config = $this->getConfig('drivers.' . $this->getConfig('driver'), []);
 
-        // Driver name
-        $name = basename(strtolower(str_replace('\\', '/', $driver)));
+        // Get driver class
+        $driver = Arr::pull($config, 'class');
 
-        return $this->driver = new $driver($this->getConfig("drivers.{$name}", []), $this->locale);
+        // Create driver instance
+        return $this->driver = new $driver($config, $this->locale);
     }
 }
