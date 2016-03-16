@@ -117,6 +117,27 @@ class Moderator
     }
 
     /**
+     * Get moderation driver.
+     *
+     * @return Drivers\AbstractDriver
+     */
+    public function getDriver()
+    {
+        if ($this->driver) {
+            return $this->driver;
+        }
+
+        // Get driver configuration
+        $config = $this->getConfig('drivers.' . $this->getConfig('driver'), []);
+
+        // Get driver class
+        $driver = Arr::pull($config, 'class');
+
+        // Create driver instance
+        return $this->driver = new $driver($config, $this->locale);
+    }
+
+    /**
      * Get cache key with locale appended if applicable.
      *
      * @return string
@@ -210,26 +231,5 @@ class Moderator
             return preg_quote($value);
 
         }, $list)));
-    }
-
-    /**
-     * Get moderation driver.
-     *
-     * @return Drivers\AbstractDriver
-     */
-    protected function getDriver()
-    {
-        if ($this->driver) {
-            return $this->driver;
-        }
-
-        // Get driver configuration
-        $config = $this->getConfig('drivers.' . $this->getConfig('driver'), []);
-
-        // Get driver class
-        $driver = Arr::pull($config, 'class');
-
-        // Create driver instance
-        return $this->driver = new $driver($config, $this->locale);
     }
 }
