@@ -12,7 +12,7 @@ trait HasModerateTrait
     public static function bootHasModerateTrait()
     {
         static::creating(function ($model) {
-            $failure = 0;
+            $moderate = false;
 
             foreach ($model->moderate as $id => $moderation) {
                 $rules = explode('|', $moderation);
@@ -22,12 +22,18 @@ trait HasModerateTrait
                     $options = isset($action[1]) ? $action[1] : null;
 
                     if (app(Moderator::class)->$action[0]($model->$id, $options)) {
-                        $failure++;
+                        $moderate = true;
+                        continue;
                     }
+                }
+
+                // No reason to keep going
+                if ($moderate === true) {
+                    continue;
                 }
             }
 
-            $model->moderated = $failure > 0;
+            $model->moderated = $moderate;
         });
 
         static::created(function ($model) {
