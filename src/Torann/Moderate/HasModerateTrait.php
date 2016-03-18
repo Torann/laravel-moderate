@@ -44,12 +44,22 @@ trait HasModerateTrait
     }
 
     /**
+     * Get moderated attribute as a proper boolean.
+     *
+     * @return bool
+     */
+    public function getModeratedAttribute()
+    {
+        return (bool) $this->moderated;
+    }
+
+    /**
      * Check if the resource is moderated.
      *
      * @return bool
      */
     public function isModerated()
     {
-        return $this->moderated == 1;
+        return $this->moderated == true;
     }
 }
