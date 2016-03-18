@@ -17,6 +17,11 @@ For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-m
 
 ## Change Log
 
+#### v0.2.3
+
+- Refactor moderate trait
+- Add mutator for moderated attribute
+
 #### v0.2.2
 
 - Simplify driver configuration
