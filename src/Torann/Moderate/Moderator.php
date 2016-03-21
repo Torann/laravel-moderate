@@ -74,6 +74,38 @@ class Moderator
     }
 
     /**
+     * Check model using the moderate rules.
+     *
+     * @param object $model
+     *
+     * @return bool
+     */
+    public function check($model)
+    {
+        $moderated = false;
+
+        foreach ($model->getModerateList() as $id => $moderation) {
+            $rules = explode('|', $moderation);
+
+            foreach ($rules as $rule) {
+                $action = explode(':', $rule);
+                $options = isset($action[1]) ? $action[1] : null;
+
+                if ($this->$action[0]($model->$id, $options)) {
+                    return $moderated = true;
+                }
+            }
+
+            // No reason to keep going
+            if ($moderated === true) {
+                return $moderated;
+            }
+        }
+
+        return $moderated;
+    }
+
+    /**
      * Checks the text if it contains any word that is blacklisted.
      *
      * @param string $text

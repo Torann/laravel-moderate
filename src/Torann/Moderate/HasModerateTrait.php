@@ -12,28 +12,7 @@ trait HasModerateTrait
     public static function bootHasModerateTrait()
     {
         static::creating(function ($model) {
-            $moderate = false;
-
-            foreach ($model->moderate as $id => $moderation) {
-                $rules = explode('|', $moderation);
-
-                foreach ($rules as $rule) {
-                    $action = explode(':', $rule);
-                    $options = isset($action[1]) ? $action[1] : null;
-
-                    if (app(Moderator::class)->$action[0]($model->$id, $options)) {
-                        $moderate = true;
-                        continue;
-                    }
-                }
-
-                // No reason to keep going
-                if ($moderate === true) {
-                    continue;
-                }
-            }
-
-            $model->moderated = $moderate;
+            $model->moderated = app(Moderator::class)->check($model);
         });
 
         static::created(function ($model) {
@@ -44,13 +23,25 @@ trait HasModerateTrait
     }
 
     /**
+     * Return array of attributes to check.
+     *
+     * @return array
+     */
+    public function getModerateList()
+    {
+        return $this->moderate;
+    }
+
+    /**
      * Get moderated attribute as a proper boolean.
+     *
+     * @param  bool $value
      *
      * @return bool
      */
-    public function getModeratedAttribute()
+    public function getModeratedAttribute($value)
     {
-        return (bool) $this->moderated;
+        return (bool) $value;
     }
 
     /**
