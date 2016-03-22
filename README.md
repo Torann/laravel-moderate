@@ -9,7 +9,7 @@ A simple moderation system for Laravel 5.
 
 ## Official Documentation
 
-Documentation for the framework can be found on [Lyften.com](http://lyften.com/projects/laravel-moderate/).
+Documentation for the package can be found on [Lyften.com](http://lyften.com/projects/laravel-moderate/).
 
 ## Laravel 4
 
