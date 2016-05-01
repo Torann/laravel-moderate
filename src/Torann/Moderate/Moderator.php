@@ -91,7 +91,8 @@ class Moderator
                 $action = explode(':', $rule);
                 $options = isset($action[1]) ? $action[1] : null;
 
-                if ($this->$action[0]($model->$id, $options)) {
+                $method = $action[0];
+                if ($this->$method($model->$id, $options)) {
                     return $moderated = true;
                 }
             }
