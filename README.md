@@ -1,4 +1,4 @@
-# Moderate for Laravel 5
+# Moderate for Laravel
 
 [![Latest Stable Version](https://poser.pugx.org/torann/moderate/v/stable.png)](https://packagist.org/packages/torann/moderate)
 [![Total Downloads](https://poser.pugx.org/torann/moderate/downloads.png)](https://packagist.org/packages/torann/moderate)
